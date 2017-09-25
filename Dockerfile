@@ -1,13 +1,19 @@
 ARG AMAZONLINUX_VERSION=2017.03
 ARG GIT_VERSION=2.14.1
-# ARG JQ_VERSION=1.5
 ARG OPENSSH_VERSION=V_7_5_P1
 
 FROM amazonlinux:${AMAZONLINUX_VERSION} as staticish_build
 
 ARG CFLAGS=
 
+ARG http_proxy=
+ARG https_proxy=
+ARG no_proxy=
+
 RUN set -x \
+ && export http_proxy="$http_proxy" \
+ && export https_proxy="$https_proxy" \
+ && export no_proxy="$no_proxy" \
  && yum install -y \
     autoconf \
     automake \
@@ -20,27 +26,15 @@ RUN set -x \
     libssh2-devel \
     make \
     openssl-devel \
-    openssl-static \
     perl-ExtUtils-Install \
     python27-devel \
     tar \
     tcl \
     xz \
-    zlib-devel \
-    zlib-static
+    zlib-devel
 
 ENV CFLAGS="${CFLAGS} -static-libgcc"
 
-# Download precompiled jq
-# FROM staticish_build as staticish_jq
-#
-# ARG JQ_VERSION
-#
-# RUN set -x \
-#  && mkdir -vp /opt/bin \
-#  && curl -ffsSL https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 --output /opt/bin/jq \
-#  && chmod -v +x /opt/bin/jq \
-#  && eval 'PATH=/opt/bin:$PATH jq --version'
 
 # Build a static-ish git
 FROM staticish_build as staticish_git
@@ -49,11 +43,19 @@ ARG GIT_VERSION
 
 WORKDIR /usr/local/src/git-${GIT_VERSION}
 
+ARG http_proxy=
+ARG https_proxy=
+ARG no_proxy=
+
 RUN set -x \
+ && export http_proxy=$http_proxy \
+ && export https_proxy=$https_proxy \
+ && export no_proxy=$no_proxy \
  && curl -fsSL https://www.kernel.org/pub/software/scm/git/git-${GIT_VERSION}.tar.xz | tar -xJC /usr/local/src \
  && make prefix=/opt CFLAGS="${CFLAGS}" \
  && make prefix=/opt CFLAGS="${CFLAGS}" install \
  && eval 'PATH=/opt/bin:$PATH git --version'
+
 
 # Build a static-ish ssh
 FROM staticish_build as staticish_ssh
@@ -62,7 +64,14 @@ ARG OPENSSH_VERSION
 
 WORKDIR /usr/local/src/openssh-portable-${OPENSSH_VERSION}
 
+ARG http_proxy=
+ARG https_proxy=
+ARG no_proxy=
+
 RUN set -x \
+ && export http_proxy=$http_proxy \
+ && export https_proxy=$https_proxy \
+ && export no_proxy=$no_proxy \
  && curl -fsSL https://github.com/openssh/openssh-portable/archive/${OPENSSH_VERSION}.tar.gz | tar -xzC /usr/local/src \
  && autoheader \
  && autoconf \
@@ -75,10 +84,10 @@ RUN set -x \
  && rm -rf /opt/sbin  \
  && eval 'PATH=/opt/bin:$PATH ssh -V'
 
+# Collect all the binaries
 FROM amazonlinux:${AMAZONLINUX_VERSION}
 
 COPY --from=staticish_git /opt/ /usr/local/
-# COPY --from=staticish_jq /opt/ /usr/local/
 COPY --from=staticish_ssh /opt/ /usr/local/
 
 ENV GIT_EXEC_PATH=/usr/local/libexec/git-core \
