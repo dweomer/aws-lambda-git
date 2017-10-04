@@ -1,2 +1,5 @@
+*.tar
+*.tgz
+*.zip
 lambda/
-lambda*.zip
+node_modules/

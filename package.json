@@ -1,0 +1,25 @@
+{
+  "name": "aws-lambda-git",
+  "version": "0.1.0",
+  "author": "Jacob Blain Christen <https://github.com/dweomer>",
+  "license": "MIT",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/dweomer/aws-lambda-git.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dweomer/aws-lambda-git/issues"
+  },
+  "homepage": "https://github.com/dweomer/aws-lambda-git#readme",
+  "main": "index.js",
+  "scripts": {
+    "build": "sh -c 'rm -vf aws-lambda-git.zip && zip -r aws-lambda-git.zip index.js node_modules/'"
+  },
+  "dependencies": {
+    "fs-extra": "^4.0.2",
+    "path": "^0.12.7",
+    "tar-fs": "^1.15.3"
+  },
+  "devDependencies": {}
+}
