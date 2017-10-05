@@ -14,9 +14,11 @@ LDIR=$(dirname $0)
 RDIR=$(realpath -e $LDIR 2> /dev/null || readlink -f $LDIR) # mac and linux
 
 DPKG=git-$(ver $GIT_VERSION)-openssh-$(ver $OPENSSH_VERSION)
-DTAG=dweomer/amazonlinux:2017.03-${DPKG}
+DTAG=dweomer/amazonlinux:${AMAZONLINUX_VERSION}-${DPKG}
 
 set -x
+
+docker pull amazonlinux:${AMAZONLINUX_VERSION}
 
 docker build \
     --build-arg "http_proxy=$http_proxy" \

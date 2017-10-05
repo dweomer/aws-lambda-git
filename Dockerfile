@@ -22,6 +22,7 @@ RUN set -x \
     gcc \
     gettext \
     glibc-static \
+    libcurl \
     libcurl-devel \
     libssh2-devel \
     make \
