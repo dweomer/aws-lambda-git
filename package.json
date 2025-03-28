@@ -22,8 +22,8 @@
   "dependencies": {
     "fs-extra": "^4.0.2",
     "path": "^0.12.7",
-    "simple-git": "^1.77.0",
-    "tar-fs": "^1.15.3"
+    "simple-git": "^3.16.0",
+    "tar-fs": "^1.16.4"
   },
   "devDependencies": {}
 }
